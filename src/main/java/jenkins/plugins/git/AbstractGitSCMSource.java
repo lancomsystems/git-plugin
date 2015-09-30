@@ -39,6 +39,7 @@ import hudson.plugins.git.Branch;
 import hudson.plugins.git.BranchSpec;
 import hudson.plugins.git.GitException;
 import hudson.plugins.git.GitSCM;
+import hudson.plugins.git.GitTool;
 import hudson.plugins.git.Revision;
 import hudson.plugins.git.SubmoduleConfig;
 import hudson.plugins.git.UserRemoteConfig;
@@ -120,7 +121,7 @@ public abstract class AbstractGitSCMSource extends SCMSource {
         cacheLock.lock();
         try {
             File cacheDir = getCacheDir(cacheEntry);
-            Git git = Git.with(listener, new EnvVars(EnvVars.masterEnvVars)).in(cacheDir);
+            Git git = Git.with(listener, new EnvVars(System.getenv())).in(cacheDir).using(GitTool.getDefaultInstallation().getGitExe());
             GitClient client = git.getClient();
             client.addDefaultCredentials(getCredentials());
             if (!client.hasGitRepo()) {
@@ -156,7 +157,7 @@ public abstract class AbstractGitSCMSource extends SCMSource {
         cacheLock.lock();
         try {
             File cacheDir = getCacheDir(cacheEntry);
-            Git git = Git.with(listener, new EnvVars(EnvVars.masterEnvVars)).in(cacheDir);
+            Git git = Git.with(listener, new EnvVars(System.getenv())).in(cacheDir).using(GitTool.getDefaultInstallation().getGitExe());
             GitClient client = git.getClient();
             client.addDefaultCredentials(getCredentials());
             if (!client.hasGitRepo()) {
@@ -249,7 +250,7 @@ public abstract class AbstractGitSCMSource extends SCMSource {
 
     protected static File getCacheDir(String cacheEntry) {
         File cacheDir = new File(new File(Jenkins.getInstance().getRootDir(), "caches"), cacheEntry);
-        cacheDir.getParentFile().mkdirs();
+        cacheDir.mkdirs();
         return cacheDir;
     }
 
